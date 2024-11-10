@@ -3,9 +3,9 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
-	"github.com/CCT-College-Dublin/ca1-project-bcncpp/scraper/internal/config"
-	"github.com/CCT-College-Dublin/ca1-project-bcncpp/scraper/pkg/tripadvisor"
-	"github.com/CCT-College-Dublin/ca1-project-bcncpp/scraper/pkg/utils"
+	"github.com/bcncpp/scraper/internal/config"
+	"github.com/bcncpp/scraper/pkg/tripadvisor"
+	"github.com/bcncpp/scraper/pkg/utils"
 	"log"
 	"math/rand"
 	"net/http"
@@ -25,9 +25,12 @@ func main() {
 		log.Fatalf("Error creating scrape config: %v", err)
 	}
 	for _, config := range hotelConfigs {
+		
+		log.Printf("URL %s\n", config.LocationURL)
 		queryType := tripadvisor.GetURLType(config.LocationURL)
 		if queryType == "" {
-			log.Fatal("Invalid URL")
+			log.Printf("Invalid URL %s", config.LocationURL)
+			continue
 		}
 		log.Printf("Location Type: %s", queryType)
 
@@ -74,7 +77,7 @@ func main() {
 			log.Fatalf("No reviews found for location ID %d", locationID)
 		}
 		log.Printf("Review count: %d", reviewCount)
-		locationName := strings.ToLower(strings.ReplaceAll(config.Name, " ", ""))
+		locationName = strings.ToLower(strings.ReplaceAll(config.HotelID, " ", ""))
 		// Create a file to save the reviews data
 		fileName := fmt.Sprintf("review_%s.%s", locationName, config.FileType)
 		fileHandle, err := os.Create(fileName)
@@ -131,7 +134,7 @@ func main() {
 					// Iterating over the reviews
 					for _, row := range reviews {
 						row := []string{
-							locationName,
+							config.HotelID,
 							row.Title,
 							row.Text,
 							strconv.Itoa(row.Rating),

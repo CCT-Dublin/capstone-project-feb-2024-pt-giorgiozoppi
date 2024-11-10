@@ -3,13 +3,14 @@ package config
 import (
 	"fmt"
 	"os"
-	"strings"
+	"encoding/csv"
 )
 
 // Config is a struct that represents the configuration for the scraper
 type Config struct {
 	HotelID     string
 	Name        string
+	City		string
 	LocationURL string
 	Languages   []string
 	FileType    string
@@ -34,11 +35,12 @@ func LoadConfig(fileName string) ([]Config, error) {
 
 	// Skip the header row by iterating from index 1
 	lang := []string{"en", "it", "de", "es"}
-	for _, row := range records[1:] {
+	for _, row := range records {
 		record := Config{
 			HotelID:     row[0],
 			Name:        row[1],
-			LocationURL: row[2],
+			City:		 row[2],
+			LocationURL: row[3],
 			Languages:   lang,
 			FileType:    "csv",
 			ProxyHost:   "",
